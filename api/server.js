@@ -78,4 +78,5 @@ app.get('/api/logout', (req, res) => {
 });
 
 app.use(require('./routes'));
+
 app.listen(PORT);

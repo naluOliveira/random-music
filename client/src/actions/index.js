@@ -18,37 +18,22 @@ export const getRandomPlaylist = () => async (dispatch) => {
   dispatch({ type: 'GET_RANDOM_PLAYLIST', payload: playlist.data });
 };
 
-export const getUserPlaylist = () => async (dispatch) => {
-  const userPlaylist = await axios.get('/api/user_saved_playlists');
+export const getUserPlaylist = (request) => async (dispatch) => {
+  let data =
+    request === 'Playlists Salvas'
+      ? await axios.get('/api/user_saved_playlists')
+      : await axios.get('/api/recently_played');
 
-  dispatch({ type: 'GET_USER_PLAYLIST', payload: userPlaylist.data });
+  dispatch({ type: 'GET_USER_PLAYLIST', payload: data.data });
 };
 
-export const getRecentlyPlayed = () => async (dispatch) => {
-  const recentlyPlayed = await axios.get('/api/recently_played');
-
-  dispatch({ type: 'RECENTLY_PLAYED', payload: recentlyPlayed.data });
-};
-
-export const getRelatedArtist = (artistId) => async (dispatch) => {
+export const getRelatedArtist = (artistId, playlistId) => async (dispatch) => {
   const relatedArtist = await axios.get(`/api/related_artist`, {
     params: {
       artistId: `${artistId}`,
+      playlistId: `${playlistId}`,
     },
   });
 
   dispatch({ type: 'RELATED_ARTIST', payload: relatedArtist.data });
-};
-
-export const getRelatedPlaylist = (playlistId) => async (dispatch) => {
-  const relatedPlaylist = await axios.get(`/api/related_artist`, {
-    params: {
-      playlistId: `${playlistId}`,
-    },
-  });
-  dispatch({ type: 'RELATED_PLAYLIST', payload: relatedPlaylist.data });
-};
-
-export const getElementInfo = (trackId) => {
-  return { type: 'ELEM_INFO', payload: trackId };
 };

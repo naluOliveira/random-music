@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { getElementInfo } from '../../actions';
 import Playlist from '../playlist/Playlist';
 import EmbedPlayer from '../pages/homepage/EmbedPlayer';
 
 class RandomPlaylist extends Component {
+  state = { elemId: '' };
+
   getElementInfo = (elemId) => {
-    this.props.getElementInfo(elemId);
+    this.setState({ elemId: elemId });
   };
 
   render() {
@@ -16,9 +17,7 @@ class RandomPlaylist extends Component {
         <div className='title'>
           <h2>Playlist de músicas aleatórias do dia</h2>
         </div>
-        {this.props.playTrack ? (
-          <EmbedPlayer id={this.props.playTrack} />
-        ) : null}
+        {this.state.elemId ? <EmbedPlayer id={this.state.elemId} /> : null}
         <Playlist
           playlistItem={this.props.playlist}
           itemId={true}
@@ -30,6 +29,6 @@ class RandomPlaylist extends Component {
 }
 
 const mapStateToProps = (state) => {
-  return { playlist: state.randomPlaylist, playTrack: state.playTrack };
+  return { playlist: state.randomPlaylist };
 };
-export default connect(mapStateToProps, { getElementInfo })(RandomPlaylist);
+export default connect(mapStateToProps, {})(RandomPlaylist);

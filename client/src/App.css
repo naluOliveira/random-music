@@ -221,9 +221,11 @@ i.icon.icon-btn {
 }
 
 .generate-music-btn {
+  display: block;
+  width: auto;
   padding: 5px 10px;
   border: 1px solid #252525;
-  margin: 10px 15px 20px;
+  margin: 0px auto 10px;
 }
 
 .generate-music-btn:hover {
@@ -236,8 +238,17 @@ i.icon.icon-btn {
   top: 20px;
 }
 
+.generate {
+  top: 20px;
+}
+
 .title {
   text-align: center;
+}
+
+.date {
+  float: left;
+  margin-top: 10px;
 }
 
 @media only screen and (max-width: 650px) {

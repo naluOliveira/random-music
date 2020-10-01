@@ -45,7 +45,7 @@ const handleError = (error, req) => {
     if (error.response.status === 401) {
       requestNewToken(req.user.spotifyID, req.user.refreshToken);
     } else if (error.request) {
-      console.log(error.request);
+      console.log(error.response.status);
     } else {
       console.log(error.message);
     }
@@ -63,6 +63,7 @@ router.get('/api/user', (req, res) => {
         isLoggedIn: true,
         displayName: req.user.displayName,
         imageUrl: req.user.imageURL,
+        generatedMusics: req.user.generatedMusics,
       };
       res.send(userInfo);
     } else {
@@ -76,6 +77,7 @@ router.get('/api/user', (req, res) => {
 // PESQUISAR A MÚSICA DO DIA E SALVAR NO BANCO DE DADOS
 
 router.get('/api/random_track', async (req, res) => {
+  let count = 0;
   if (!req.user) {
     return res.end();
   }
@@ -85,14 +87,13 @@ router.get('/api/random_track', async (req, res) => {
   if (existingMusic) {
     return res.send(existingMusic);
   }
+  const randomGenreID = randomNumbers(473);
 
-  try {
-    const randomGenreID = randomNumbers(473);
+  Genre.findOne({ genreID: randomGenreID }).then((result) => {
+    const query = result ? result.name.replace(/\s/g, '%20') : 'top%2000';
+    console.log(randomGenreID, query);
 
-    Genre.findOne({ genreID: randomGenreID }).then((result) => {
-      const query = result ? result.name.replace(/\s/g, '%20') : 'top%2000';
-      console.log(randomGenreID, query);
-
+    while (count < 2) {
       axiosSpotify
         .get(`/search?q=${query}&type=track&maket=from_token`, {
           headers: {
@@ -115,15 +116,15 @@ router.get('/api/random_track', async (req, res) => {
             url: uri,
           });
           randomTrack.save();
+          count = 3;
           res.send(randomTrack);
         })
         .catch((error) => {
           handleError(error, req);
+          count++;
         });
-    });
-  } catch (error) {
-    console.log(error.response);
-  }
+    }
+  });
 });
 
 // PEGAR PLAYLIST DE MUSICAS NO BANCO DE DADOS
@@ -155,41 +156,36 @@ router.get('/api/user_saved_playlists', async (req, res) => {
   if (existingPlaylists.savedPlaylists.length != 0) {
     return res.send(existingPlaylists.savedPlaylists);
   }
-
-  try {
-    axiosSpotify
-      .get(`/users/${req.user.spotifyID}/playlists`, {
-        headers: {
-          'Accept': 'aplication/json',
-          'Content-Type': 'aplication/json',
-          'Authorization': `Bearer ${req.user.accessToken}`,
-        },
-      })
-      .then((response) => {
-        const playlists = response.data.items.map((playlist) => {
-          const { id, images, name, uri, owner } = playlist;
-          return {
-            playlistId: id,
-            owner: owner.display_name,
-            name,
-            imageURL: images[0].url,
-            url: uri,
-          };
-        });
-
-        User.findOneAndUpdate(
-          { spotifyID: req.user.spotifyID },
-          { savedPlaylists: playlists }
-        ).then((result) => result.save());
-
-        res.send(playlists);
-      })
-      .catch((error) => {
-        handleError(error, req);
+  axiosSpotify
+    .get(`/users/${req.user.spotifyID}/playlists`, {
+      headers: {
+        'Accept': 'aplication/json',
+        'Content-Type': 'aplication/json',
+        'Authorization': `Bearer ${req.user.accessToken}`,
+      },
+    })
+    .then((response) => {
+      const playlists = response.data.items.map((playlist) => {
+        const { id, images, name, uri, owner } = playlist;
+        return {
+          playlistId: id,
+          owner: owner.display_name,
+          name,
+          imageURL: images[0].url,
+          url: uri,
+        };
       });
-  } catch (error) {
-    console.log('ROUTER ERROR', error);
-  }
+
+      User.findOneAndUpdate(
+        { spotifyID: req.user.spotifyID },
+        { savedPlaylists: playlists }
+      ).then((result) => result.save());
+
+      res.send(playlists);
+    })
+    .catch((error) => {
+      handleError(error, req);
+    });
 });
 
 router.get('/api/recently_played', async (req, res) => {
@@ -238,7 +234,7 @@ router.get('/api/related_artist/', async (req, res) => {
   let artistId = req.query.artistId;
   const playlistId = req.query.playlistId;
 
-  if (!artistId) {
+  if (artistId === 'undefined') {
     await axiosSpotify
       .get(`/playlists/${playlistId}/tracks`, {
         headers: {
@@ -255,35 +251,38 @@ router.get('/api/related_artist/', async (req, res) => {
       });
   }
 
-  try {
-    axiosSpotify
-      .get(`/recommendations?seed_artists=${artistId}`, {
-        headers: {
-          'Accept': 'aplication/json',
-          'Content-Type': 'aplication/json',
-          'Authorization': `Bearer ${req.user.accessToken}`,
-        },
-      })
-      .then((response) => {
-        if (response.data.length === 0) {
-          res.send(false);
-        }
+  axiosSpotify
+    .get(`/recommendations?seed_artists=${artistId}`, {
+      headers: {
+        'Accept': 'aplication/json',
+        'Content-Type': 'aplication/json',
+        'Authorization': `Bearer ${req.user.accessToken}`,
+      },
+    })
+    .then((response) => {
+      if (response.data.length === 0) {
+        res.send(false);
+      }
 
-        const randomNum = randomNumbers(19);
-        const data = response.data.tracks[randomNum];
-        const recommendedTrack = {
-          trackId: data.id,
-          name: data.name,
-          artist: data.artists[0].name,
-          url: data.uri,
-          imageURL: data.album.images[0].url,
-        };
-        console.log(recommendedTrack);
-        res.send(recommendedTrack);
+      const randomNum = randomNumbers(19);
+      const data = response.data.tracks[randomNum];
+      const recommendedTrack = {
+        trackId: data.id,
+        name: data.name,
+        artist: data.artists[0].name,
+        url: data.uri,
+        imageURL: data.album.images[0].url,
+      };
+      console.log(recommendedTrack);
+      User.findOne({ spotifyID: req.user.spotifyID }).then((result) => {
+        result.generatedMusics.push(recommendedTrack);
+        result.save();
       });
-  } catch (error) {
-    handleError(error, req);
-  }
+      res.send(recommendedTrack);
+    })
+    .catch((error) => {
+      handleError(error, req);
+    });
 });
 
 module.exports = router;

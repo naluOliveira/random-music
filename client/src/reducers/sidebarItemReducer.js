@@ -17,7 +17,7 @@ const sidebarItemReducer = () => {
     },
     {
       content: 'Minhas músicas geradas',
-      linkTo: '/playlist_usuário',
+      linkTo: '/playlist_usuario',
       iconName: 'user outline',
     },
   ];

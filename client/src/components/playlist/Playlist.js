@@ -1,6 +1,20 @@
 import React, { Component } from 'react';
 
 class Playlist extends Component {
+  transformDate = (date) => {
+    let newDate = '';
+    let elem = '';
+    for (let i = 0; i < date.length; i++) {
+      if (date[i] === '-') {
+        newDate = '/' + elem + newDate;
+        elem = '';
+      } else {
+        elem += date[i];
+      }
+    }
+    return elem + newDate;
+  };
+
   playlistItem = () => {
     const { playlistItem, getElementInfo } = this.props;
 
@@ -12,11 +26,12 @@ class Playlist extends Component {
           onClick={() => {
             this.props.itemId
               ? getElementInfo(elem.trackId)
-              : elem.artistId
-              ? getElementInfo(elem.artistId)
-              : getElementInfo(elem.playlistId);
+              : getElementInfo(elem.artistId, elem.playlistId);
           }}
         >
+          {elem.date ? (
+            <div className='date'>{this.transformDate(elem.date)}</div>
+          ) : null}
           <img
             src={elem.imageURL}
             alt='Capa do album da música'

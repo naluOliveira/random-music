@@ -17,6 +17,14 @@ const recentlyPlayedSchema = new mongoose.Schema({
   url: String,
 });
 
+const generatedMusicsSchema = new mongoose.Schema({
+  trackId: String,
+  name: String,
+  artist: String,
+  url: String,
+  imageURL: String,
+});
+
 const userSchema = new mongoose.Schema({
   spotifyID: {
     type: String,
@@ -29,6 +37,7 @@ const userSchema = new mongoose.Schema({
   refreshToken: String,
   savedPlaylists: [savedPlaylistsSchema],
   recentlyPlayed: [recentlyPlayedSchema],
+  generatedMusics: [generatedMusicsSchema],
 });
 
 mongoose.model('users', userSchema);

@@ -1,50 +1,51 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import {
-  getUserPlaylist,
-  getRecentlyPlayed,
-  getRelatedArtist,
-  getRelatedPlaylist,
-} from '../../actions';
+import { getUserPlaylist, getRelatedArtist } from '../../actions';
 import Playlist from '../playlist/Playlist';
 import EmbedPlayer from '../pages/homepage/EmbedPlayer';
 
 class GenerateMusic extends Component {
-  constructor() {
-    super();
-    this.pickPlaylist = '';
-  }
+  state = {
+    pickPlaylist: '',
+    recentlyPlayed: [],
+    userSavedPlaylist: [],
+  };
 
-  handleClick = (list) => {
-    const { getUserPlaylist, getRecentlyPlayed } = this.props;
+  handleClick = async (list) => {
+    const { recentlyPlayed, userSavedPlaylist } = this.state;
 
-    list === 'salvas' ? getUserPlaylist() : getRecentlyPlayed();
+    if (recentlyPlayed.length !== 0 && userSavedPlaylist.length !== 0)
+      return this.setState({ pickPlaylist: list });
 
-    this.pickPlaylist = list;
+    await this.props.getUserPlaylist(list);
+
+    this.setState(() => {
+      if (list === 'Playlists Salvas') {
+        return {
+          pickPlaylist: list,
+          userSavedPlaylist: this.props.playlists,
+        };
+      }
+      return { pickPlaylist: list, recentlyPlayed: this.props.playlists };
+    });
   };
 
   renderPlaylist = () => {
-    if (!this.pickPlaylist) return null;
-    let playlist,
-      title,
-      clickFunction = null;
+    const { pickPlaylist, recentlyPlayed, userSavedPlaylist } = this.state;
 
-    if (this.pickPlaylist === 'salvas') {
-      playlist = this.props.playlists;
-      title = 'Playlists Salvas';
-      clickFunction = this.props.getRelatedPlaylist;
-    } else {
-      playlist = this.props.recentlyPlayed;
-      title = 'Recém tocadas';
-      clickFunction = this.props.getRelatedArtist;
-    }
+    if (!pickPlaylist) return null;
+
+    let playlist =
+      pickPlaylist === 'Playlists Salvas' ? userSavedPlaylist : recentlyPlayed;
 
     return (
       <Playlist
         playlistItem={playlist}
-        title={title}
-        getElementInfo={(playlistId) => clickFunction(playlistId)}
+        title={this.state.pickPlaylist}
+        getElementInfo={(artistId, playlistId) =>
+          this.props.getRelatedArtist(artistId, playlistId)
+        }
         noIcon={true}
       />
     );
@@ -52,11 +53,15 @@ class GenerateMusic extends Component {
 
   embedPlayer = () => {
     const { trackId } = this.props.relatedArtist;
-
+    console.log(this.props.relatedArtist);
     return trackId ? (
-      <div>
+      <div className='musica gerada'>
         <p>A música gerada foi: </p>
         <EmbedPlayer id={trackId} />
+        <p>
+          Lembrando que você pode acessar todas as suas músicas salvas em
+          "Minhas músicas geradas"
+        </p>
       </div>
     ) : null;
   };
@@ -64,7 +69,7 @@ class GenerateMusic extends Component {
   render() {
     return (
       <section>
-        <div className='w3-col homepage homepage-container'>
+        <div className='w3-col homepage homepage-container generate'>
           <div className='homepage-right-content-text'>
             <h2>Gerar música</h2>
             <br />
@@ -80,13 +85,13 @@ class GenerateMusic extends Component {
             <br />
             <button
               className='generate-music-btn'
-              onClick={() => this.handleClick('salvas')}
+              onClick={() => this.handleClick('Playlists Salvas')}
             >
               Playlists salvas
             </button>
             <button
               className='generate-music-btn'
-              onClick={() => this.handleClick('recemTocadas')}
+              onClick={() => this.handleClick('Recém tocadas')}
             >
               Músicas recém tocadas
             </button>
@@ -105,14 +110,11 @@ class GenerateMusic extends Component {
 const mapStateToProps = (state) => {
   return {
     playlists: state.userPlaylist,
-    recentlyPlayed: state.recentlyPlayed,
     relatedArtist: state.relatedArtist,
   };
 };
 
 export default connect(mapStateToProps, {
   getUserPlaylist,
-  getRecentlyPlayed,
   getRelatedArtist,
-  getRelatedPlaylist,
 })(GenerateMusic);
