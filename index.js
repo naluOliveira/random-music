@@ -8,7 +8,7 @@ const {
   path,
 } = require('./models/dependencies.js');
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 require('dotenv').config();
 require('./models/user');
 require('./models/genres');
@@ -80,11 +80,9 @@ app.get('/api/logout', (req, res) => {
 
 app.use(require('./routes'));
 
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static('client/build'));
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
-  });
-}
+app.use(express.static('client/build'));
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+});
 
 app.listen(PORT);
