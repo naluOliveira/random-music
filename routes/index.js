@@ -93,37 +93,34 @@ router.get('/api/random_track', async (req, res) => {
     const query = result ? result.name.replace(/\s/g, '%20') : 'top%2000';
     console.log(randomGenreID, query);
 
-    while (count < 2) {
-      axiosSpotify
-        .get(`/search?q=${query}&type=track&maket=from_token`, {
-          headers: {
-            'Accept': 'aplication/json',
-            'Content-Type': 'aplication/json',
-            'Authorization': `Bearer ${req.user.accessToken}`,
-          },
-        })
-        .then((response) => {
-          const randomTrackID = randomNumbers(19);
-          const { id, name, artists, uri, album } = response.data.tracks.items[
-            randomTrackID
-          ];
-          const randomTrack = new Music({
-            trackId: id,
-            date: getDate(),
-            name,
-            artist: artists[0].name,
-            imageURL: album.images[1].url,
-            url: uri,
-          });
-          randomTrack.save();
-          count = 3;
-          res.send(randomTrack);
-        })
-        .catch((error) => {
-          handleError(error, req);
-          count++;
+    axiosSpotify
+      .get(`/search?q=${query}&type=track&maket=from_token`, {
+        headers: {
+          'Accept': 'aplication/json',
+          'Content-Type': 'aplication/json',
+          'Authorization': `Bearer ${req.user.accessToken}`,
+        },
+      })
+      .then((response) => {
+        const randomTrackID = randomNumbers(19);
+        const { id, name, artists, uri, album } = response.data.tracks.items[
+          randomTrackID
+        ];
+        const randomTrack = new Music({
+          trackId: id,
+          date: getDate(),
+          name,
+          artist: artists[0].name,
+          imageURL: album.images[1].url,
+          url: uri,
         });
-    }
+        randomTrack.save();
+
+        res.send(randomTrack);
+      })
+      .catch((error) => {
+        handleError(error, req);
+      });
   });
 });
 

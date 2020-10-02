@@ -22,6 +22,7 @@ passport.use(
       clientID: process.env.CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET,
       callbackURL: process.env.REDIRECTURI,
+      proxy: true,
     },
 
     async function (accessToken, refreshToken, profile, done) {
