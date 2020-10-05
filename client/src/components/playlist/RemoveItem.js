@@ -13,18 +13,20 @@ class RemoveItem extends Component {
   };
 
   removeElementonClick = async (e) => {
-    const { removeElement, elemId } = this.props;
+    const { removeElement, elemId, getUserGeneratedPlaylist } = this.props;
     e.stopPropagation();
 
     this.setState({ removendo: true });
 
     await removeElement(elemId);
-    getUserGeneratedPlaylist();
 
-    this.setState({
-      btnClick: !this.state.btnClick,
-      removendo: false,
-    });
+    this.setState(
+      {
+        btnClick: !this.state.btnClick,
+        removendo: false,
+      },
+      () => getUserGeneratedPlaylist()
+    );
   };
 
   renderText = () => {

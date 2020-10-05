@@ -8,7 +8,11 @@ require('dotenv').config();
 
 //HELPER FUNCTIONS
 const randomNumbers = (num) => Math.trunc(Math.random() * num);
-const getDate = () => new Date().toLocaleDateString('pt-BR');
+const getDate = () => {
+  let date = new Date();
+  let options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+  return date.toLocaleDateString('pt-BR', options);
+};
 const requestNewToken = (spotifyID, refreshToken) => {
   const client = Buffer.from(
     `${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`
@@ -301,8 +305,9 @@ router.get('/api/remove_element', (req, res) => {
       },
       { $pull: { generatedMusics: { trackId: trackId } } }
     ).then((result) => {
-      result.save();
-      res.end();
+      result.save((err, product) => {
+        res.end();
+      });
     });
   } catch (error) {
     console.log(error);
