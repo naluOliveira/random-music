@@ -10,10 +10,14 @@ class GenerateMusic extends Component {
     pickPlaylist: '',
     recentlyPlayed: [],
     userSavedPlaylist: [],
+    loading: false,
+    loadingPlaylist: false,
   };
 
   handleClick = async (list) => {
     const { recentlyPlayed, userSavedPlaylist } = this.state;
+
+    this.setState({ loadingPlaylist: true });
 
     if (recentlyPlayed.length !== 0 && userSavedPlaylist.length !== 0)
       return this.setState({ pickPlaylist: list });
@@ -25,16 +29,41 @@ class GenerateMusic extends Component {
         return {
           pickPlaylist: list,
           userSavedPlaylist: this.props.playlists,
+          loadingPlaylist: false,
         };
       }
-      return { pickPlaylist: list, recentlyPlayed: this.props.playlists };
+      return {
+        pickPlaylist: list,
+        recentlyPlayed: this.props.playlists,
+        loadingPlaylist: false,
+      };
     });
   };
 
-  renderPlaylist = () => {
-    const { pickPlaylist, recentlyPlayed, userSavedPlaylist } = this.state;
+  getElementInfo = async (artistId, playlistId) => {
+    this.setState({ loading: true });
+    await this.props.getRelatedArtist(artistId, playlistId);
+    this.setState({ loading: false });
+  };
 
-    if (!pickPlaylist) return null;
+  renderPlaylist = () => {
+    const {
+      pickPlaylist,
+      recentlyPlayed,
+      userSavedPlaylist,
+      loadingPlaylist,
+    } = this.state;
+
+    if (loadingPlaylist) {
+      return (
+        <div className='generate-music-icon'>
+          <i className='ui spinner loading large icon' />
+          <div>Carregando</div>
+        </div>
+      );
+    } else if (!pickPlaylist) {
+      return null;
+    }
 
     let playlist =
       pickPlaylist === 'Playlists Salvas' ? userSavedPlaylist : recentlyPlayed;
@@ -43,9 +72,9 @@ class GenerateMusic extends Component {
       <Playlist
         playlistItem={playlist}
         title={this.state.pickPlaylist}
-        getElementInfo={(artistId, playlistId) =>
-          this.props.getRelatedArtist(artistId, playlistId)
-        }
+        getElementInfo={(artistId, playlistId) => {
+          this.getElementInfo(artistId, playlistId);
+        }}
         noIcon={true}
       />
     );
@@ -53,7 +82,16 @@ class GenerateMusic extends Component {
 
   embedPlayer = () => {
     const { trackId } = this.props.relatedArtist;
-    console.log(this.props.relatedArtist);
+
+    if (this.state.loading) {
+      return (
+        <div className='generate-music-icon'>
+          <i className='ui spinner loading large icon' />
+          <div>Buscando uma música para você</div>
+        </div>
+      );
+    }
+
     return trackId ? (
       <div className='musica gerada'>
         <p>A música gerada foi: </p>
@@ -67,6 +105,23 @@ class GenerateMusic extends Component {
   };
 
   render() {
+    if (!this.props.isLoggedIn) {
+      return (
+        <div className='w3-col homepage-container random-playlist-container'>
+          <div className='spotify-btn-container'>
+            <a
+              href='/auth/spotify'
+              className='spotify-btn spotify-btn-style'
+              role='button'
+            >
+              <i className='ui large spotify icon icon-btn' />
+              Entrar com Spotify
+            </a>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <section>
         <div className='w3-col homepage homepage-container generate'>
@@ -111,6 +166,7 @@ const mapStateToProps = (state) => {
   return {
     playlists: state.userPlaylist,
     relatedArtist: state.relatedArtist,
+    isLoggedIn: state.auth.isLoggedIn,
   };
 };
 

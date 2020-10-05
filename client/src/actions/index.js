@@ -18,6 +18,21 @@ export const getRandomPlaylist = () => async (dispatch) => {
   dispatch({ type: 'GET_RANDOM_PLAYLIST', payload: playlist.data });
 };
 
+export const getUserGeneratedPlaylist = () => async (dispatch) => {
+  const generatedPlaylist = await axios.get('/api/generated_playlist');
+
+  dispatch({ type: 'GET_GENERATED_PLAYLIST', payload: generatedPlaylist.data });
+};
+
+export const removeElement = (elemId, index) => async (dispatch) => {
+  const newPlaylist = await axios.get(`/api/remove_element`, {
+    params: {
+      trackId: elemId,
+    },
+  });
+  dispatch({ type: 'REMOVE_ELEMENT', payload: newPlaylist.data });
+};
+
 export const getUserPlaylist = (request) => async (dispatch) => {
   let data =
     request === 'Playlists Salvas'

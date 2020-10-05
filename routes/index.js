@@ -77,7 +77,6 @@ router.get('/api/user', (req, res) => {
 // PESQUISAR A MÚSICA DO DIA E SALVAR NO BANCO DE DADOS
 
 router.get('/api/random_track', async (req, res) => {
-  let count = 0;
   if (!req.user) {
     return res.end();
   }
@@ -128,16 +127,9 @@ router.get('/api/random_track', async (req, res) => {
 
 router.get('/api/random_playlist', (req, res) => {
   try {
-    const randomPlaylist = [];
-
     Music.find({}, (err, musics) => {
       if (err) throw new Error(err);
-
-      musics.forEach((music) => {
-        randomPlaylist.push(music);
-      });
-
-      res.send(randomPlaylist);
+      res.send(musics);
     });
   } catch (error) {
     console.log(error);
@@ -147,14 +139,17 @@ router.get('/api/random_playlist', (req, res) => {
 // PEGAR PLAYLISTS SALVAS DO USUÁRIO
 
 router.get('/api/user_saved_playlists', async (req, res) => {
-  const existingPlaylists = await User.findOne({
+  // VER SE A PLAYLIST JÁ ESTÁ NO BANCO DE DADOS
+  const getUser = await User.findOne({
     spotifyID: req.user.spotifyID,
   });
-  if (existingPlaylists.savedPlaylists.length != 0) {
-    return res.send(existingPlaylists.savedPlaylists);
+  if (getUser.savedPlaylists.length != 0) {
+    return res.send(getUser.savedPlaylists);
   }
+
+  // PEGAR A PLAYLIST DO SPOTIFY
   axiosSpotify
-    .get(`/users/${req.user.spotifyID}/playlists`, {
+    .get(`/users/${req.user.spotifyID}/playlists?limit=10`, {
       headers: {
         'Accept': 'aplication/json',
         'Content-Type': 'aplication/json',
@@ -186,11 +181,11 @@ router.get('/api/user_saved_playlists', async (req, res) => {
 });
 
 router.get('/api/recently_played', async (req, res) => {
-  const existingPlaylists = await User.findOne({
+  const getUser = await User.findOne({
     spotifyID: req.user.spotifyID,
   });
-  if (existingPlaylists.recentlyPlayed.length != 0) {
-    return res.send(existingPlaylists.recentlyPlayed);
+  if (getUser.recentlyPlayed.length != 0) {
+    return res.send(getUser.recentlyPlayed);
   }
 
   axiosSpotify
@@ -245,6 +240,9 @@ router.get('/api/related_artist/', async (req, res) => {
         for (let i = 0; i < 5; i++) {
           artistId += response.data.items[i].track.album.artists[0].id + ',';
         }
+      })
+      .catch((error) => {
+        handleError(error, req);
       });
   }
 
@@ -280,6 +278,35 @@ router.get('/api/related_artist/', async (req, res) => {
     .catch((error) => {
       handleError(error, req);
     });
+});
+
+////////////////////////// PEGAR PLAYLIST GERADA DO USUARIO /////////////////////////////////////////
+router.get('/api/generated_playlist', (req, res) => {
+  try {
+    User.findOne({
+      spotifyID: req.user.spotifyID,
+    }).then((result) => res.send(result.generatedMusics));
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.get('/api/remove_element', (req, res) => {
+  const trackId = req.query.trackId;
+  console.log(trackId);
+  try {
+    User.findOneAndUpdate(
+      {
+        spotifyID: req.user.spotifyID,
+      },
+      { $pull: { generatedMusics: { trackId: trackId } } }
+    ).then((result) => {
+      result.save();
+      res.end();
+    });
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 module.exports = router;

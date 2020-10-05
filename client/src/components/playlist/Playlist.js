@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+import RemoveItem from './RemoveItem';
+
 class Playlist extends Component {
   transformDate = (date) => {
     let newDate = '';
@@ -16,7 +18,7 @@ class Playlist extends Component {
   };
 
   playlistItem = () => {
-    const { playlistItem, getElementInfo } = this.props;
+    const { playlistItem, getElementInfo, noIcon, removeBtn } = this.props;
 
     return playlistItem.map((elem, i) => {
       return (
@@ -37,9 +39,10 @@ class Playlist extends Component {
             alt='Capa do album da música'
             width='40px'
           ></img>
+          {removeBtn ? <RemoveItem elemId={elem.trackId} index={i} /> : null}
           <i
             className='ui play circle large icon'
-            style={this.props.noIcon ? { display: 'none' } : {}}
+            style={noIcon ? { display: 'none' } : {}}
           ></i>
           <div className='list-item-playlist-content'>
             <div className='list-item-name'>{elem.name}</div>

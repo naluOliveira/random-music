@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import Playlist from '../playlist/Playlist';
+import Pagination from './Pagination';
 import EmbedPlayer from '../pages/homepage/EmbedPlayer';
 
 class RandomPlaylist extends Component {
@@ -18,10 +18,10 @@ class RandomPlaylist extends Component {
           <h2>Playlist de músicas aleatórias do dia</h2>
         </div>
         {this.state.elemId ? <EmbedPlayer id={this.state.elemId} /> : null}
-        <Playlist
-          playlistItem={this.props.playlist}
-          itemId={true}
+        <Pagination
+          userPlaylist={this.props.playlist}
           getElementInfo={this.getElementInfo}
+          itemId={true}
         />
       </div>
     );
