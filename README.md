@@ -20,16 +20,17 @@ Esta aplicação utiliza de cookies para identificação de dados do usuário.
 
 ## Preview
 
+*Música aleatória do dia na página inicial.*\
 ![](preview1.gif)\
-A música aleatória do dia na página inicial.
 
-![](preview2.gif)\
-Gerar música baseada na playlist selecionada e acessar playlist de músicas geradas.
+*Gerar música baseada na playlist selecionada e acessar playlist de músicas geradas.*\
+![](preview2.gif)
+
 
 ## Contato
 
 Este projeto foi desenvolvido por Ana Luiza Lopes, Desenvolvedora de Software\
 Contatos:\
 analuizalopes.oliveira@gmail.com\
-linkedin.com/in/analu-lopes-oliveira/\
+[linkedin.com/in/analu-lopes-oliveira](linkedin.com/in/analu-lopes-oliveira) \
 (31) 99515-0753
