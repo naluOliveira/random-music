@@ -31,4 +31,5 @@ Gerar música baseada na playlist selecionada e acessar playlist de músicas ger
 Este projeto foi desenvolvido por Ana Luiza Lopes, Desenvolvedora de Software\
 Contatos:\
 analuizalopes.oliveira@gmail.com\
+linkedin.com/in/analu-lopes-oliveira/\
 (31) 99515-0753
