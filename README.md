@@ -20,10 +20,10 @@ Esta aplicação utiliza de cookies para identificação de dados do usuário.
 
 ## Preview
 
-![](preview1.gif width=350)
+![](preview1.gif)\
 A música aleatória do dia na página inicial.
 
-![](preview2.gif width=350)
+![](preview2.gif)\
 Gerar música baseada na playlist selecionada e acessar playlist de músicas geradas.
 
 ## Contato
