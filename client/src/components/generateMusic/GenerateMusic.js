@@ -20,7 +20,7 @@ class GenerateMusic extends Component {
     this.setState({ loadingPlaylist: true });
 
     if (recentlyPlayed.length !== 0 && userSavedPlaylist.length !== 0)
-      return this.setState({ pickPlaylist: list });
+      return this.setState({ pickPlaylist: list, loadingPlaylist: false });
 
     await this.props.getUserPlaylist(list);
 
