@@ -16,12 +16,15 @@ Link: https://random-music-generator.herokuapp.com/
 
 A interface do Gerador de Músicas foi feita com React (Redux), CSS e JavaScript.\
 O backend foi desenvolvido com NodeJS (Express) e MongoDB (mongoose) como banco de dados.\
-Esta aplicação utiliza de cookies para identificação de dados do usuário.\
+Esta aplicação utiliza de cookies para identificação de dados do usuário.
 
 ## Preview
 
-![](preview1.gif)
+![](preview1.gif width=350)
 A música aleatória do dia na página inicial.
+
+![](preview2.gif width=350)
+Gerar música baseada na playlist selecionada e acessar playlist de músicas geradas.
 
 ## Contato
 
