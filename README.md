@@ -20,6 +20,8 @@ Esta aplicação utiliza de cookies para identificação de dados do usuário.\
 
 ## Preview
 
+![](preview1.gif)
+A música aleatória do dia na página inicial.
 
 ## Contato
 
