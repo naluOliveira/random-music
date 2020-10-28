@@ -7,6 +7,7 @@ import HomePageRandomMusic from './HomePageRandomMusic';
 
 class HomePage extends Component {
   render() {
+    debugger;
     const { isLoggedIn, randomMusic } = this.props;
     return (
       <section>

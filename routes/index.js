@@ -1,5 +1,5 @@
-const { express, mongoose, qs } = require('../models/dependencies');
-const { axiosSpotify, axiosSpotifyAccount } = require('../routes/axiosSpotify');
+const { express, mongoose } = require('../models/dependencies');
+const { axiosSpotify, axiosSpotifyWrapper } = require('../routes/axiosSpotify');
 const router = express.Router();
 const Genre = mongoose.model('genres');
 const Music = mongoose.model('musics');
@@ -12,36 +12,6 @@ const getDate = () => {
   let date = new Date();
   let options = { year: 'numeric', month: '2-digit', day: '2-digit' };
   return date.toLocaleDateString('pt-BR', options);
-};
-const requestNewToken = (spotifyID, refreshToken) => {
-  const client = Buffer.from(
-    `${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`
-  ).toString('base64');
-
-  axiosSpotifyAccount
-    .post(
-      '',
-      qs.stringify({
-        'grant_type': 'refresh_token',
-        'refresh_token': refreshToken,
-      }),
-      {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': `Basic ${client}`,
-        },
-      }
-    )
-    .then((response) => {
-      console.log(response.data);
-      User.findOneAndUpdate(
-        { spotifyID: spotifyID },
-        { accessToken: response.data.access_token }
-      ).then((result) => {
-        result.save();
-      });
-    })
-    .catch((error) => console.log('acconut error', error.response));
 };
 
 const handleError = (error, req) => {
@@ -86,45 +56,47 @@ router.get('/api/random_track', async (req, res) => {
   }
 
   // CONFERE SE JÁ FOI GERADA UMA MUSICA ALEATÓRIA NAQUELE DIA
-  const existingMusic = await Music.findOne({ date: getDate() });
+  /*  const existingMusic = await Music.findOne({ date: getDate() });
   if (existingMusic) {
     return res.send(existingMusic);
-  }
+  } */
   const randomGenreID = randomNumbers(473);
 
-  Genre.findOne({ genreID: randomGenreID }).then((result) => {
-    const query = result ? result.name.replace(/\s/g, '%20') : 'top%2000';
-    console.log(randomGenreID, query);
+  const result = await Genre.findOne({ genreID: randomGenreID });
+  const query = result ? result.name.replace(/\s/g, '%20') : 'top%2000';
 
-    axiosSpotify
-      .get(`/search?q=${query}&type=track&maket=from_token`, {
+  try {
+    const response = await axiosSpotifyWrapper(
+      `/search?q=${query}&type=track&maket=from_token`,
+      {
         headers: {
           'Accept': 'aplication/json',
           'Content-Type': 'aplication/json',
           'Authorization': `Bearer ${req.user.accessToken}`,
         },
-      })
-      .then((response) => {
-        const randomTrackID = randomNumbers(19);
-        const { id, name, artists, uri, album } = response.data.tracks.items[
-          randomTrackID
-        ];
-        const randomTrack = new Music({
-          trackId: id,
-          date: getDate(),
-          name,
-          artist: artists[0].name,
-          imageURL: album.images[1].url,
-          url: uri,
-        });
-        randomTrack.save();
+      },
+      req
+    );
 
-        res.send(randomTrack);
-      })
-      .catch((error) => {
-        handleError(error, req);
-      });
-  });
+    const randomTrackID = randomNumbers(19);
+    const { id, name, artists, uri, album } = response.data.tracks.items[
+      randomTrackID
+    ];
+    const randomTrack = new Music({
+      trackId: id,
+      date: getDate(),
+      name,
+      artist: artists[0].name,
+      imageURL: album.images[1].url,
+      url: uri,
+    });
+    randomTrack.save();
+
+    res.send(randomTrack);
+  } catch (error) {
+    res.status(400);
+    res.send(error);
+  }
 });
 
 // PEGAR PLAYLIST DE MUSICAS NO BANCO DE DADOS

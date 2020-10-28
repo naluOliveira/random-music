@@ -9,6 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon index.js",
+    "start-debug": "nodemon --inspect index.js",
     "build": "cd client && npm install && npm run build"
   },
   "author": "",
@@ -34,4 +35,3 @@
     "eslint": "^6.6.0"
   }
 }
-
