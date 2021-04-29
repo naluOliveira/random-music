@@ -66,10 +66,16 @@ app.get(
 app.get('/api/logout', (req, res) => {
   User.findOne({ _id: req.user.id })
     .then((result) => {
-      result.accessToken = undefined;
-      result.refreshToken = undefined;
-      result.savedPlaylists = [];
-      result.recentlyPlayed = [];
+      const {
+        accessToken,
+        refreshToken,
+        savedPlaylists,
+        recentlyPlayed,
+      } = result;
+      accessToken = undefined;
+      refreshToken = undefined;
+      savedPlaylists = [];
+      recentlyPlayed = [];
       result.save();
     })
     .catch((err) => console.log(err));

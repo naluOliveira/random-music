@@ -24,7 +24,7 @@ export const getUserGeneratedPlaylist = () => async (dispatch) => {
   dispatch({ type: 'GET_GENERATED_PLAYLIST', payload: generatedPlaylist.data });
 };
 
-export const removeElement = (elemId, index) => async (dispatch) => {
+export const removeElement = (elemId) => async (dispatch) => {
   const newPlaylist = await axios.get(`/api/remove_element`, {
     params: {
       trackId: elemId,

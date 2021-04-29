@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default (props) => {
+export default function HomePageText() {
   return (
     <div className='w3-col homepage homepage-container'>
       <div className='homepage-content homepage-left-content'>
@@ -17,4 +17,4 @@ export default (props) => {
       </div>
     </div>
   );
-};
+}

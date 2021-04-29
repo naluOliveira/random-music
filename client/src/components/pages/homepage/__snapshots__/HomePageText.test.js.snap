@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`uses jest-dom 1`] = `
+<DocumentFragment>
+  <div
+    class="w3-col homepage homepage-container"
+  >
+    <div
+      class="homepage-content homepage-left-content"
+    >
+      <h1
+        class="homepage-content-title"
+      >
+        Gerador de músicas aleatórias
+      </h1>
+      <div
+        class="homepage-content-text"
+      >
+        <p>
+          Aqui você pode conhecer uma música completamente aleatória todos os dias! Você também pode gerar uma músicas baseadas no seu gosto musical, usando suas playlists salvas ou músicas recém tocadas.
+        </p>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

@@ -1,40 +1,37 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 
-class SpotifyListItem extends Component {
-  state = {
-    href: '/auth/spotify',
-    key: '13',
-    icon: 'spotify',
-    text: 'Entrar com Spotify',
-  };
+const loggedInDefaultState = {
+  href: '/api/logout',
+  key: '12',
+  icon: 'log out',
+  text: 'Logout',
+};
 
-  componentDidUpdate(prevProps) {
-    if (this.props.isLoggedIn !== prevProps.isLoggedIn) {
-      if (this.props.isLoggedIn) {
-        this.setState({
-          href: '/api/logout',
-          key: '12',
-          icon: 'log out',
-          text: 'Logout',
-        });
-      }
-    }
-  }
+const loggedOutDefaultState = {
+  href: '/auth/spotify',
+  key: '13',
+  icon: 'spotify',
+  text: 'Entrar com Spotify',
+};
 
-  render() {
-    const { href, key, icon, text } = this.state;
+export default function SpotifyListItem({ isLoggedIn }) {
+  const [data, setData] = useState(
+    isLoggedIn ? loggedInDefaultState : loggedOutDefaultState
+  );
+  const { href, key, icon, text } = data;
 
-    return (
-      <a href={href}>
-        <li className='list-item' key={key}>
-          <div className='list-item-content list-item-content--style'>
-            <i className={`ui ${icon} inverted circular icon`} />
-            <div className='list-content--toggle'>{text}</div>
-          </div>
-        </li>
-      </a>
-    );
-  }
+  useEffect(() => {
+    setData(isLoggedIn ? loggedInDefaultState : loggedOutDefaultState);
+  }, [isLoggedIn]);
+
+  return (
+    <a href={href} data-testid='meuteste'>
+      <li className='list-item' key={key}>
+        <div className='list-item-content list-item-content--style'>
+          <i className={`ui ${icon} inverted circular icon`} />
+          <div className='list-content--toggle'>{text}</div>
+        </div>
+      </li>
+    </a>
+  );
 }
-
-export default SpotifyListItem;

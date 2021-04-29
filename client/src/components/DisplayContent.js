@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import Routes from './Routes';
 
@@ -10,39 +10,23 @@ import {
 } from '../actions';
 import VerticalSidebar from './sidebar/VerticalSidebar';
 
-class DisplayContent extends Component {
-  componentDidMount() {
-    const {
-      getUserInfo,
-      getRandomPlaylist,
-      getRandomMusicResponse,
-    } = this.props;
+export default function DisplayContent() {
+  const dispatch = useDispatch();
 
-    getUserInfo();
-    getRandomPlaylist();
-    getRandomMusicResponse();
-  }
+  useEffect(() => {
+    dispatch(getUserInfo());
+    dispatch(getRandomPlaylist());
+    dispatch(getRandomMusicResponse());
+  }, []);
 
-  render() {
-    return (
-      <main className='w3-row'>
-        <BrowserRouter>
-          <VerticalSidebar />
-          <section>
-            <Routes />
-          </section>
-        </BrowserRouter>
-      </main>
-    );
-  }
+  return (
+    <main className='w3-row'>
+      <BrowserRouter>
+        <VerticalSidebar />
+        <section>
+          <Routes />
+        </section>
+      </BrowserRouter>
+    </main>
+  );
 }
-
-const mapStateToProps = (state) => {
-  return { userInfo: state.auth };
-};
-
-export default connect(mapStateToProps, {
-  getUserInfo,
-  getRandomPlaylist,
-  getRandomMusicResponse,
-})(DisplayContent);
