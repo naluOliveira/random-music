@@ -14,8 +14,7 @@ Link: https://random-music-generator.herokuapp.com/
 
 ## Sobre o Projeto
 
-A interface do Gerador de Músicas foi feita com React (Redux), CSS e JavaScript.\
-O backend foi desenvolvido com NodeJS (Express) e MongoDB (mongoose) como banco de dados.\
+O Gerador de Música foi desenvolvido utilizando-se React, CSS, Node.js (Express) e MongoDB.\
 Esta aplicação utiliza de cookies para identificação de dados do usuário.
 
 ## Preview
