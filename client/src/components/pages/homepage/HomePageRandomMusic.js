@@ -1,5 +1,5 @@
 import React from 'react';
-import EmbedPlayer from './EmbedPlayer';
+import EmbedPlayer from '../../player/EmbedPlayer';
 
 export default function HomePageRandomMusic({ isLoggedIn, id, artist, name }) {
   return (

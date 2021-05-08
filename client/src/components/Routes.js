@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 import HomePage from './pages/homepage/HomePage';
-import GenerateMusic from './generateMusic/GenerateMusic';
+import GenerateMusic from './pages/generateMusic/GenerateMusic';
 import RandomPlaylist from './pages/RandomPlaylist';
 import UserPlaylist from './pages/UserPlaylist';
 

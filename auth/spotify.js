@@ -31,6 +31,9 @@ passport.use(
         if (existingUser) {
           existingUser.accessToken = accessToken;
           existingUser.refreshToken = refreshToken;
+          if (existingUser.imageURL !== profile.photos[0]) {
+            existingUser.imageURL = profile.photos[0];
+          }
           existingUser.save();
           return done(null, existingUser);
         }

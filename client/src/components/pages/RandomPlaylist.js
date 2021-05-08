@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import Pagination from './Pagination';
-import EmbedPlayer from '../pages/homepage/EmbedPlayer';
+import Pagination from '../playlist/Pagination';
+import EmbedPlayer from '../player/EmbedPlayer';
 
 class RandomPlaylist extends Component {
   state = { elemId: '' };

@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 
 import { getUserGeneratedPlaylist } from '../../actions';
 
-import EmbedPlayer from '../pages/homepage/EmbedPlayer';
-import Pagination from './Pagination';
+import EmbedPlayer from '../player/EmbedPlayer';
+import Pagination from '../playlist/Pagination';
 
 class UserPlaylist extends Component {
   state = {

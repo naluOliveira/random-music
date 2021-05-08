@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactPaginate from 'react-paginate';
-import Playlist from '../playlist/Playlist';
+import Playlist from './Playlist';
 
 class Pagination extends Component {
   state = {
